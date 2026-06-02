@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Match Schedule - Mustapha Tv</title>
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- Basic Icons -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Satisfy&family=Poppins:wght@300;400;600;800&display=swap');
         
@@ -12,6 +14,7 @@
             --bg-color: #0f1111; 
             --surface-color: #1b1e1e; 
             --accent-color: #2ecc71; 
+            --live-color: #ff4757; /* لون للمباريات المباشرة */
             --text-main: #ffffff; 
             --text-dim: #9ca3af; 
             --neo-shadow-out: 8px 8px 16px #080909, -4px -4px 12px #1c2121; 
@@ -61,22 +64,32 @@
         }
 
         .match-center { width: 30%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        
+        /* تنسيق Badge الحالة */
         .score-badge { 
-            background: var(--bg-color); padding: 5px 12px; border-radius: 10px; 
-            color: var(--accent-color); font-weight: 800; font-size: 1rem; 
+            padding: 5px 12px; border-radius: 10px; 
+            font-weight: 800; font-size: 0.8rem; 
             box-shadow: var(--neo-shadow-in); margin-bottom: 4px;
         }
+        .status-upcoming { color: var(--accent-color); }
+        .status-live { color: var(--live-color); animation: pulse 1.5s infinite; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
         .time-text { font-size: 0.85rem; font-weight: 700; color: var(--text-dim); }
         .league-name { font-size: 0.6rem; color: var(--accent-color); text-transform: uppercase; margin-bottom: 8px; text-align: center; opacity: 0.8; }
 
         #loading { text-align: center; padding: 50px; color: var(--accent-color); }
-        .spinner { font-size: 2rem; animation: spin 1s infinite linear; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
+        .spinner { font-size: 3rem; margin-bottom: 10px; }
+       
         @media (max-width: 400px) {
             .team-box img { width: 35px; height: 35px; }
             .team-name { font-size: 0.65rem; }
-            .score-badge { font-size: 0.9rem; padding: 4px 10px; }
+            .score-badge { font-size: 0.75rem; }
         }
     </style>
 </head>
@@ -84,84 +97,80 @@
 
 <header>
     <div class="header-container">
-        <a href="index.html" style="text-decoration: none;"><div class="logo-text">Mustapha Tv</div></a>
-        
+        <a href="index.html" style="text-decoration: none;"><div class="logo-text">Match Schedule</div></a>
     </div>
 </header>
 
 <div class="container">
     <a href="https://mustaphatv.vercel.app/" class="back-btn"><i class='bx bx-left-arrow-alt'></i> Back Home</a>
-    <div id="loading"><div class="spinner"><i class='bx bx-loader-alt'></i></div><p>Loading...</p></div>
+    
+    <!-- تم الحفاظ على الأيقونة كما طلبت -->
+    <div id="loading">
+        <div class="spinner"><i class="bx bx-loader-dots bx-spin"></i></div>
+        <p>Loading Matches...</p>
+    </div>
+
     <div class="schedule-list" id="schedule-list"></div>
 </div>
 
 <script>
-    const API_URL = "https://kora-api.space/api/matches/2026-05-11?t=55";
-    
-    // الروابط المطلوبة
-    const TEAM_IMG_URL = 'https://ws.kora-api.top/uploads/team/';
-    const LEAGUE_IMG_URL = 'https://ws.kora-api.top/uploads/league/';
-    
-    // تصفية الدوريات المحظورة
-    const blockedLeagues = [/NBA/i, /Formula 1/i, /NFL/i, /MotoGP/i];
-
+    const API_URL = "https://ws.kora-api.top/api/matches/";
     const listContainer = document.getElementById('schedule-list');
     const loadingDiv = document.getElementById('loading');
-
-    function addOneHour(timeStr) {
-        if (!timeStr) return "--:--";
-        let [hours, minutes] = timeStr.split(':').map(Number);
-        hours = (hours + 1) % 24;
-        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-    }
 
     async function fetchMatches() {
         try {
             const response = await fetch(API_URL);
-            const matches = await response.json();
+            const result = await response.json();
             
             loadingDiv.style.display = 'none';
 
-            if (Array.isArray(matches) && matches.length > 0) {
-                // تصفية البيانات قبل العرض
-                const filteredMatches = matches.filter(match => {
-                    return !blockedLeagues.some(regex => regex.test(match.league_en));
-                });
-                renderMatches(filteredMatches);
+            if (result.data && result.data.length > 0) {
+                renderMatches(result.data);
             } else {
-                listContainer.innerHTML = "<p style='text-align:center; color:var(--text-dim);'>No football matches today.</p>";
+                listContainer.innerHTML = "<p style='text-align:center; color:var(--text-dim);'>No matches found today.</p>";
             }
         } catch (error) {
-            loadingDiv.innerHTML = "<p style='color:#ff4757;'>Fetch Error.</p>";
+            loadingDiv.innerHTML = "<p style='color:#ff4757;'>Error loading data. Please try again.</p>";
         }
     }
 
     function renderMatches(matches) {
         listContainer.innerHTML = "";
         matches.forEach(match => {
+            // استخراج اسم الفريقين
+            const teamNames = match.name.split(' vs ');
+            const team1 = teamNames[0] || "Team 1";
+            const team2 = teamNames[1] || "Team 2";
+
+            // تحويل الوقت من ISO إلى الوقت المحلي
+            const matchTime = new Date(match.begin_at).toLocaleTimeString('en-GB', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: false 
+            });
+
+            // تحديد الحالة واللون
+            const isLive = match.is_live;
+            const statusLabel = isLive ? "LIVE" : "VS";
+            const statusClass = isLive ? "status-live" : "status-upcoming";
+
             const card = document.createElement('div');
             card.className = 'match-card';
 
-            const localTime = addOneHour(match.time);
-            const currentScore = (match.score && match.score !== "-") ? match.score : "VS";
-            
-            // استخدام TEAM_IMG_URL للصور
-            const homeLogo = match.home_logo ? TEAM_IMG_URL + match.home_logo : 'https://cdn-icons-png.flaticon.com/512/53/53283.png';
-            const awayLogo = match.away_logo ? TEAM_IMG_URL + match.away_logo : 'https://cdn-icons-png.flaticon.com/512/53/53283.png';
-
             card.innerHTML = `
                 <div class="team-box">
-                    <img src="${homeLogo}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'">
-                    <span class="team-name">${match.home_en}</span>
+                    <img src="${match.logo_team1}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'">
+                    <span class="team-name">${team1}</span>
                 </div>
                 <div class="match-center">
-                    <div class="league-name">${match.league_en}</div>
-                    <div class="score-badge">${currentScore}</div>
-                    <div class="time-text">${localTime}</div>
+                    <div class="league-name">${match.category ? match.category.name : 'Match'}</div>
+                    <div class="score-badge ${statusClass}">${statusLabel}</div>
+                    <div class="time-text">${matchTime}</div>
                 </div>
                 <div class="team-box">
-                    <img src="${awayLogo}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'">
-                    <span class="team-name">${match.away_en}</span>
+                    <img src="${match.logo_team2}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/53/53283.png'">
+                    <span class="team-name">${team2}</span>
                 </div>
             `;
             listContainer.appendChild(card);
