@@ -617,6 +617,52 @@ html, body {
                 grid-template-columns: 1fr;
             }
         }
+        
+        
+        
+        
+        
+        .schedule-link {
+    text-decoration: none;
+    color: var(--accent-color);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border: 1px solid var(--accent-color);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: 0.3s all ease;
+    margin-left: 15px; /* مسافة بين العنوان والزر */
+    white-space: nowrap; /* يمنع نزول النص لسطر جديد في الشاشات الصغيرة */
+    text-transform: uppercase;
+}
+
+.schedule-link:hover {
+    background: var(--accent-color);
+    color: #000; /* يتغير النص للأسود عند التمرير */
+    box-shadow: 0 0 10px rgba(46, 204, 113, 0.4);
+    transform: translateY(-2px);
+}
+
+.schedule-link i {
+    font-size: 1rem;
+}
+
+/* تحسين للشاشات الصغيرة جداً */
+@media (max-width: 480px) {
+    .schedule-link {
+        font-size: 0.65rem;
+        padding: 3px 8px;
+        margin-left: 8px;
+    }
+    .schedule-link i {
+        display: none; /* إخفاء الأيقونة في الجوال لتوفير مساحة */
+    }
+}
+
+
     </style>
 </head>
 <body>
@@ -640,9 +686,16 @@ html, body {
 </header>
 
 <!-- عنوان قسم المباريات -->
+<!-- عنوان قسم المباريات مع إضافة زر الجدول -->
 <div class="section-header">
     <i class='bx bx-football' style="color: var(--accent-color); font-size: 1.5rem;"></i>
     <h2>Today's Live Matches</h2>
+    
+    <!-- الزر الجديد هنا -->
+    <a href="Schedule.html" class="schedule-link">
+        All 
+    </a>
+
     <div class="line"></div>
 </div>
 
