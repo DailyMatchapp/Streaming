@@ -8,27 +8,24 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Satisfy&family=Poppins:wght@300;400;600;800&display=swap');
         :root { --bg-color: #0f1111; --surface-color: #1b1e1e; --accent-color: #2ecc71; --text-main: #ffffff; --text-dim: #9ca3af; --neo-shadow-out: 8px 8px 16px #080909, -4px -4px 12px #1c2121; --neo-shadow-in: inset 4px 4px 8px #080909, inset -4px -4px 8px #1c2121;}
-        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; display: flex; flex-direction: column; align-items: center; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
         header { width: 100%; padding: 10px 0; background: var(--surface-color); box-shadow: 0 4px 30px rgba(0,0,0,0.5); display: flex; justify-content: center; }
         .header-container { width: 90%; max-width: 1200px; display: flex; justify-content: space-between; align-items: center; }
         .logo-area { display: flex; align-items: center; gap: 8px; text-decoration: none; }
-        .logo-text { font-family: 'Satisfy', cursive; font-size: 2.1rem; background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .site-icon { width: 40px; height: 40px; filter: drop-shadow(0 0 5px var(--accent-color)); }
-        .header-social { display: flex; gap: 12px; }
-        .header-social a { width: 35px; height: 35px; background: var(--bg-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s; box-shadow: var(--neo-shadow-out); }
-
+        .logo-text { font-family: 'Satisfy', cursive; font-size: 2rem; background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
         .container { width: 90%; max-width: 600px; margin: 40px 0; }
         .back-btn { display: inline-flex; align-items: center; gap: 8px; color: var(--accent-color); text-decoration: none; font-weight: 600; margin-bottom: 20px; }
 
         .form-card { background: var(--surface-color); padding: 40px; border-radius: 25px; box-shadow: var(--neo-shadow-out); }
-        h1 {white-space: nowrap; color: var(--accent-color); margin-bottom: 30px; }
+        h1 { color: var(--accent-color); margin-bottom: 30px; text-align:center; }
         
         .input-group { margin-bottom: 20px; width: 100%;}
         label { display: block; margin-bottom: 8px; color: var(--text-dim); font-size: 0.9rem; }
         input, textarea { width: 100%; padding: 15px; background: var(--bg-color); border: none; border-radius: 12px; box-shadow: var(--neo-shadow-in); color: white; outline: none; font-family: 'Poppins'; box-sizing: border-box; }
         
-        .submit-btn { width: 100%; padding: 15px; background: var(--accent-color); border: none; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .submit-btn { width: 100%; padding: 15px; background: var(--accent-color); border: none; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 10px; color: #000; }
         .submit-btn:hover { transform: scale(0.98); box-shadow: 0 0 20px rgba(46, 204, 113, 0.4); }
 
         footer { width: 100%; background: var(--surface-color); padding: 40px 0 20px; border-top: 1px solid rgba(46, 204, 113, 0.2); margin-top: auto; text-align: center; }
@@ -39,30 +36,34 @@
 <header>
     <div class="header-container">
         <a href="index.html" class="logo-area">
-                    <div class="logo-text">Mustapha Tv</div>
+            <div class="logo-text">Mustapha Tv</div>
         </a>
-        
     </div>
 </header>
 
 <div class="container">
     <a href="https://mustaphatv.vercel.app/" class="back-btn"><i class='bx bx-left-arrow-alt'></i> Back to Home</a>
-    <div class="form-card">
-        <h1>Contact Support</h1>
+    
+    <!-- تعديل: إضافة وسم الـ form هنا -->
+    <form action="https://formspree.io/f/mykandyr" method="POST" class="form-card">
+        <h1>Support</h1>
         <div class="input-group">
             <label>Name</label>
-            <input type="text" placeholder="Enter your name">
+            <!-- تعديل: إضافة name="name" -->
+            <input type="text" name="name" placeholder="Enter your name" required>
         </div>
         <div class="input-group">
             <label>Email</label>
-            <input type="email" placeholder="example@mail.com">
+            <!-- تعديل: إضافة name="email" -->
+            <input type="email" name="email" placeholder="example@mail.com" required>
         </div>
         <div class="input-group">
             <label>Message</label>
-            <textarea rows="5" placeholder="How can we help you?"></textarea>
+            <!-- تعديل: إضافة name="message" -->
+            <textarea name="message" rows="5" placeholder="How can we help you?" required></textarea>
         </div>
-        <button class="submit-btn">SEND MESSAGE</button>
-    </div>
+        <button type="submit" class="submit-btn">SEND MESSAGE</button>
+    </form>
 </div>
 
 <footer>
@@ -70,4 +71,4 @@
 </footer>
 
 </body>
-</html>
+    </html>
