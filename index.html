@@ -201,7 +201,8 @@ html, body {
         }
 
         .category-name { color: var(--accent-color); }
-        .status-live { color: #ff4757; animation: blink 1.5s infinite; }
+        .status-live { margin-right:5px ;
+        color: #ff4757; animation: blink 1.5s infinite; }
 
         @keyframes blink { 0% {opacity: 1} 50% {opacity: 0.4} 100% {opacity: 1} }
 
@@ -680,7 +681,7 @@ html, body {
 
  <div class="section-header">
         <i class='bx bx-movie-play' style="color: var(--accent-color); font-size: 1.5rem;"></i>
-        <h2>Recent Highlights</h2>
+        <h2> Highlights</h2>
         <div class="line"></div>
     </div>
 
@@ -762,7 +763,7 @@ html, body {
         "ufc": "https://i.ibb.co/qwKpKvY/6600fcf2-3042-4809-819c-b499e0295627-removalai-preview.png",
         "boxing": "https://i.ibb.co/9kLXzXVt/521e4ae8-54c2-4bf6-a694-d9b5ab5723fe-removalai-preview.png",
         "wwe": "https://i.ibb.co/6xLsbDZ/46a874d1-4fe8-4e9a-a0f7-6dc0d56bcc03-removalai-preview.png",
-        "default": "https://i.ibb.co/tTyHt8M3/file-0000000063a87243a17d1231ea1c5249.png"
+        "default": "https://i.ibb.co/WvjM4FZc/No-Image-Found-400x264.png"
     };
 
     function getFallbackLogo(category) {
@@ -793,83 +794,98 @@ html, body {
     }
 
     function render(matches) {
-        container.innerHTML = "";
-        matches.forEach((m, i) => {
-            const dateObj = new Date(m.begin_at);
-            dateObj.setHours(dateObj.getHours() - 1); 
-            const time24 = dateObj.toLocaleTimeString('en-GB', { 
-    hour: '2-digit', 
-    minute: '2-digit', 
-    timeZone: 'Africa/Algiers' // هذا يضمن عرض الوقت بتوقيت شمال أفريقيا (GMT+1)
-});
-            const categoryName = m.category?.name || "Sports";
-            const categoryClass = "cat-" + categoryName.toLowerCase().trim().replace(/\s+/g, '-');
-            
-            
-            
-            
-            
-            
-            
+    // 1. هذا هو الجزء الجديد (ترتيب المصفوفة)
+    matches.sort((a, b) => {
+        // تحويل اسم الدوري لنص صغير للبحث فيه بسهولة
+        const catA = (a.category?.name || "").toLowerCase();
+        const catB = (b.category?.name || "").toLowerCase();
 
-    // 2. تحديد الأيقونة المناسبة بناءً على الاسم
-    let iconClass = "bx-star"; // أيقونة افتراضية
-    const lowerCat = categoryName.toLowerCase();
+        // هل المباراة الأولى كرة قدم؟
+        const isFootballA = catA.includes('foot') || catA.includes('soccer');
+        // هل المباراة الثانية كرة قدم؟
+        const isFootballB = catB.includes('foot') || catB.includes('soccer');
 
-    if (lowerCat.includes('foot') || lowerCat.includes('soccer')) iconClass = "bx-football";
-    else if (lowerCat.includes('basket')) iconClass = "bx-basketball";
-    else if (lowerCat.includes('mma') || lowerCat.includes('ufc')) iconClass = "bx-shield-x";
-    else if (lowerCat.includes('box')) iconClass = "bx-bolt"; // أو أي أيقونة مناسبة
-    else if (lowerCat.includes('tennis')) iconClass = "bx-tennis-ball";
-    else if (lowerCat.includes('wwe')) iconClass = "bx-trophy";
-    else if (lowerCat.includes('base')) iconClass = "bx-baseball";
+        // إذا كانت الأولى كرة قدم والثانية لا، اجعل الأولى تسبق الثانية
+        if (isFootballA && !isFootballB) return -1;
+        // إذا كانت الثانية كرة قدم والأولى لا، اجعل الثانية تسبق الأولى
+        if (!isFootballA && isFootballB) return 1;
+        
+        // إذا كان كلاهما من نفس النوع، اترك ترتيبهم كما هو
+        return 0;
+    });
 
-    
-            
-            
-            
-            
-            
-            
-            const fallbackLogo = getFallbackLogo(categoryName);
-            const parts = m.name.split(/ vs | @ | - /);
-            const team1Name = parts[0]?.trim() || "Team A";
-            const team2Name = parts[1]?.trim() || "Team B";
-            const stream = m.streams?.[0]?.url || "";
-
-            const card = document.createElement('div');
-            card.className = `match-card ${i === 0 ? 'active' : ''}`;
-            card.onclick = () => {
-                if(!stream) return;
-                activeUrl = stream; player.src = stream;
-                document.querySelectorAll('.match-card').forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
-                playerSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            };
-
-            card.innerHTML = `
-                <div class="card-status-bar">
-                   <span class="category-name ${categoryClass}">
-                <i class='bx ${iconClass}'></i> ${categoryName}
-            </span>
-                    <span class="${m.is_live ? 'status-live' : ''}">${m.is_live ? 'LIVE' : time24}</span>
-                </div>
-                <div class="card-body">
-                    <div class="team-box">
-                        <img src="${m.logo_team1}" onerror="this.src='${fallbackLogo}'">
-                        <span class="team-name">${team2Name.substring(0,10)}</span>
-                    </div>
-                    <div class="vs-divider">VS</div>
-                    <div class="team-box">
-                        <img src="${m.logo_team2}" onerror="this.src='${fallbackLogo}'">
-                        <span class="team-name">${team1Name.substring(0,10)}</span>
-                    </div>
-                </div>
-            `;
-            container.appendChild(card);
-            if(i === 0 && stream) { activeUrl = stream; player.src = stream; }
+    // 2. باقي الكود القديم لرسم البطاقات كما هو دون تغيير
+    container.innerHTML = "";
+    matches.forEach((m, i) => {
+        const dateObj = new Date(m.begin_at);
+        dateObj.setHours(dateObj.getHours() - 1); 
+        const time24 = dateObj.toLocaleTimeString('en-GB', { 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            timeZone: 'Africa/Algiers'
         });
-    }
+
+        const categoryName = m.category?.name || "Sports";
+        const categoryClass = "cat-" + categoryName.toLowerCase().trim().replace(/\s+/g, '-');
+
+        let iconClass = "bx-star";
+        const lowerCat = categoryName.toLowerCase();
+        if (lowerCat.includes('foot') || lowerCat.includes('soccer')) iconClass = "bx-football";
+        else if (lowerCat.includes('basket')) iconClass = "bx-basketball";
+        else if (lowerCat.includes('mma') || lowerCat.includes('ufc')) iconClass = "bx-shield-x";
+        else if (lowerCat.includes('box')) iconClass = "bx-bolt";
+        else if (lowerCat.includes('tennis')) iconClass = "bx-tennis-ball";
+        else if (lowerCat.includes('wwe')) iconClass = "bx-trophy";
+        else if (lowerCat.includes('base')) iconClass = "bx-baseball";
+
+        const fallbackLogo = getFallbackLogo(categoryName);
+        const parts = m.name.split(/ vs | @ | - /);
+        const team1Name = parts[0]?.trim() || "Team A";
+        const team2Name = parts[1]?.trim() || "Team B";
+        const stream = m.streams?.[0]?.url || "";
+
+        const card = document.createElement('div');
+        card.className = `match-card ${i === 0 ? 'active' : ''}`;
+        card.onclick = () => {
+            if(!stream) return;
+            activeUrl = stream; player.src = stream;
+            document.querySelectorAll('.match-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            playerSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        };
+
+        card.innerHTML = `
+            <div class="card-status-bar">
+               <span class="category-name ${categoryClass}">
+                    <i class='bx ${iconClass}'></i> ${categoryName}
+                </span>
+                <span style="color: white;">
+        ${m.is_live ? '<span class="status-live">LIVE</span> ' : ''}${time24}
+    </span>
+            </div>
+            <div class="card-body">
+                <div class="team-box">
+                    <img src="${m.logo_team1}" onerror="this.src='${fallbackLogo}'">
+                    <span class="team-name">${team2Name.substring(0,10)}</span>
+                </div>
+                <div class="vs-divider">VS</div>
+                <div class="team-box">
+                    <img src="${m.logo_team2}" onerror="this.src='${fallbackLogo}'">
+                    <span class="team-name">${team1Name.substring(0,10)}</span>
+                </div>
+            </div>
+        `;
+        container.appendChild(card);
+        if(i === 0 && stream) { activeUrl = stream; player.src = stream; }
+    });
+}
+
+
+
+
+
+
+
 
     function reloadFrame() { if(activeUrl) { player.src = "about:blank"; setTimeout(() => player.src = activeUrl, 100); } }
     function scrollSlide(d) { container.scrollBy({ left: d * 280, behavior: 'smooth' }); }
