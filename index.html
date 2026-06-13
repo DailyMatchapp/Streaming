@@ -338,6 +338,28 @@ html, body {
             font-size: 0.8rem;
             color: var(--text-dim);
         }
+        
+        
+        
+        
+    
+
+.footer-bottom {
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+}
+
+/* تحسين استجابة الفوتر للهواتف */
+@media (max-width: 480px) {
+    .footer-desc {
+        font-size: 0.8rem;
+        padding: 0 10px;
+    }
+}
+        
+        
 
         /* تنبيه حالة الإنترنت */
         #net-status {
@@ -663,6 +685,54 @@ html, body {
 }
 
 
+
+
+/* زر العودة للأعلى المطور */
+#backToTop {
+    position: fixed;
+    bottom: -60px; /* مخفي في البداية تحت الشاشة */
+    right: 25px;
+    width: 45px;
+    height: 45px;
+    background: rgba(46, 204, 113, 0.15); /* خلفية شفافة من لون الموقع */
+    backdrop-filter: blur(8px); /* تأثير تغبيش زجاجي */
+    -webkit-backdrop-filter: blur(8px);
+    color: #FFFFFF;
+    border: 1px solid rgba(46, 204, 113, 0.3);
+    border-radius: 12px; /* زوايا دائرية عصرية */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 9999;
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* حركة ارتدادية ذكية */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* حالة الظهور عند النزول */
+#backToTop.show {
+    bottom: 30px;
+    opacity: 1;
+}
+
+/* تأثير عند تمرير الماوس */
+#backToTop:hover {
+    background: var(--accent-color);
+    color: #0f1111;
+    transform: translateY(-5px); /* يرتفع قليلاً عند الحوم فوقه */
+    box-shadow: 0 0 20px rgba(46, 204, 113, 0.5);
+}
+
+#backToTop i {
+    font-weight:bold;
+    transition: transform 0.3s ease;
+}
+
+#backToTop:hover i {
+    transform: scale(1.2);
+}
+
     </style>
 </head>
 <body>
@@ -792,15 +862,57 @@ html, body {
 
     <div class="footer-bottom">
         
-         <span>LiveFootball -</span> <span>UFCStream -</span> <span>SoccerLive </span> 
+         <span style="color:#eee;">LiveFootball -</span> <span style="color:#eee;">UFCStream -</span> <span style="color:#eee;">SoccerLive </span> 
         
         
-        <p>&copy; 2026 Mustapha Tv - All sports content is provided for informational purposes.</p>
-        <div style="margin-top: 10px; opacity: 0.6; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; font-size: 0.7rem;">
-           
+       
+            <p>&copy; <span id="year"></span> <span style="color: var(--accent-color);">Mustapha Tv</span>. All rights reserved.</p>
         </div>
+        
     </div>
 </footer>
+
+
+
+<!-- زر العودة للأعلى -->
+<button id="backToTop" onclick="scrollToTop()">
+    <i class='bx bx-chevron-up'></i>
+</button>
+
+
+
+        
+       <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+    
+    
+    
+    
+    
+    // الحصول على الزر
+const backToTopBtn = document.getElementById("backToTop");
+
+// مراقبة التمرير
+window.onscroll = function() {
+    if (document.body.scrollTop > 500 || document.documentElement.scrollTop > 500) {
+        backToTopBtn.classList.add("show");
+    } else {
+        backToTopBtn.classList.remove("show");
+    }
+};
+
+// وظيفة العودة للأعلى بسلاسة
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth' // حركة انسيابية
+    });
+}
+</script> 
+    
+
+
+
 
 <script>
     const apiURL = "https://ws.kora-api.top/api/matches/";
